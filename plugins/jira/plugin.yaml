@@ -1,0 +1,32 @@
+name: jira
+version: 1.0.0
+runtime: python
+description: "Jira issues, approvals, and ticket metrics"
+categories: [task, metric]
+entrypoint:
+  python:
+    script: __main__.py
+requirements: requirements.txt
+config:
+  - { key: base_url, label: "Jira URL", required: true }
+  - key: queries
+    label: "JQL queries"
+    required: true
+    type: object_list
+    fields:
+      - { key: name, label: "Short name (e.g. My Open Tickets)", required: true }
+      - { key: jql, label: "JQL expression", required: true }
+      - { key: mode, label: "Mode (items/metric)", default: "items" }
+credentials:
+  - { key: email, label: "Email" }
+  - { key: token, label: "API Token", secret: true }
+capabilities:
+  network: ["*.atlassian.net"]
+  filesystem: []
+render:
+  custom: false
+tools:
+  - name: jira_ticket
+    description: "Fetch details for a specific Jira ticket by key (e.g. PROJ-123)."
+    params:
+      key: "required, e.g. IAC-128972"

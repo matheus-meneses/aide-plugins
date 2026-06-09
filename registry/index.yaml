@@ -1,1 +1,54 @@
-plugins: {}
+plugins:
+  jira:
+    name: jira
+    version: 1.0.0
+    description: "Jira issues, approvals, and ticket metrics"
+    categories: [task, metric]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/jira
+
+  gitlab:
+    name: gitlab
+    version: 1.0.0
+    description: "GitLab merge requests, work items, and reviews"
+    categories: [task]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/gitlab
+
+  outlook:
+    name: outlook
+    version: 1.0.0
+    description: "Microsoft Outlook calendar events and inbox unread count"
+    categories: [event, metric]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/outlook
+
+  sailpoint:
+    name: sailpoint
+    version: 1.0.0
+    description: "SailPoint IdentityNow access-request approvals and certifications"
+    categories: [approval, task]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/sailpoint
+
+  rh_portal:
+    name: rh_portal
+    version: 1.0.0
+    description: "RH Portal - vacation approvals and absence tracking"
+    categories: [approval, absence]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/rh_portal
+
+  rh_management_portal:
+    name: rh_management_portal
+    version: 1.0.0
+    description: "RH Management Portal - team absences, events, and tasks"
+    categories: [absence, event, task]
+    runtime: python
+    repository: "https://github.com/banco-inter-sa/aide-plugins"
+    path: plugins/rh_management_portal

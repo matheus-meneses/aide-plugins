@@ -1,0 +1,245 @@
+# AGENTS.md — aide-plugins
+
+## Purpose
+
+This repo contains community plugins for [aide](https://github.com/your-org/aide). Each plugin is
+an isolated Python package run in a sandboxed subprocess by the aide CLI.
+
+---
+
+## Identity
+
+- Write idiomatic Python 3.11+. Use type annotations everywhere.
+- No narrating comments. Only comments that explain *why*.
+- **NEVER write to stdout.** The `aide_sdk` runtime redirects `sys.stdout → stderr` at startup to
+  reserve stdout for the JSON protocol. All logging and debug output must go to `sys.stderr` or
+  Python `logging` (which defaults to stderr).
+- Use `$AIDE_HOME`, not hardcoded `~/.aide`. See the sessions helper below.
+- Declare every outbound hostname in `capabilities.network`. The sandbox denies undeclared hosts.
+- Secrets injected at runtime must never be written to disk or logged.
+
+---
+
+## Plugin layout
+
+```
+plugins/<name>/
+├── plugin.yaml       manifest (required)
+├── requirements.txt  pip deps (required)
+├── __main__.py       entry-point (required, see template below)
+└── scraper.py        your BaseScraper subclass
+```
+
+### `__main__.py` (copy verbatim, change only the import)
+
+```python
+from aide_sdk.runtime import serve
+from scraper import MyScraper
+
+if __name__ == "__main__":
+    serve(MyScraper)
+```
+
+---
+
+## Manifest — `plugin.yaml`
+
+All keys verified against `plugins/jira/plugin.yaml`:
+
+```yaml
+name: my-plugin          # snake_case, matches the directory name
+version: 1.0.0
+runtime: python
+description: "One-line description"
+categories: [task]       # subset of: absence | approval | metric | alert | task | event
+
+entrypoint:
+  python:
+    script: __main__.py
+
+requirements: requirements.txt
+
+config:                  # list of config fields shown in aide's TUI
+  - { key: base_url, label: "Service URL", required: true }
+  - key: queries         # complex field example
+    label: "Query list"
+    required: true
+    type: object_list    # or: string_list, integer, string (default)
+    fields:
+      - { key: name, label: "Name", required: true }
+      - { key: jql,  label: "Query", required: true }
+      - { key: mode, label: "Mode (items/metric)", default: "items" }
+
+credentials:             # stored in OS keychain, injected as env at runtime
+  - { key: email, label: "Email" }
+  - { key: token, label: "API Token", secret: true }
+
+capabilities:
+  network: ["*.atlassian.net"]   # glob list of allowed outbound hosts
+  filesystem: []                 # list of allowed paths (usually empty)
+  # browser: true                # uncomment for Playwright plugins
+
+render:
+  custom: false           # true → implement render() in your scraper
+
+tools:                   # optional: expose named query actions to the agent
+  - name: fetch_item
+    description: "Fetch a single item by ID."
+    params:
+      id: "required, e.g. PROJ-123"
+```
+
+---
+
+## `BaseScraper` contract
+
+From `aide_sdk/base.py`:
+
+```python
+class BaseScraper(ABC):
+    name: str = ""
+    version: str = "0.1.0"
+    categories: ClassVar[list[str]] = []
+
+    # Required
+    @abstractmethod
+    def scrape(self, config: dict[str, Any], secrets: dict[str, Any]) -> list[ScraperEntry]: ...
+
+    # Optional — return [] by default
+    def scrape_team(self, config, secrets) -> list[TeamMemberEntry]: ...
+    def scrape_metrics(self, config, secrets) -> list[MetricEntry]: ...
+
+    # Optional — no-ops by default
+    def authenticate(self, config, secrets) -> None: ...
+    def validate_config(self, config) -> None: ...
+
+    # Optional — raise NotImplementedError by default
+    def query(self, name, params, config, secrets) -> str: ...
+    def render(self, heading, items, config) -> list[str]: ...
+```
+
+Execution order for the `scrape` action:
+`validate_config` → `authenticate` → `scrape` → `scrape_team` → `scrape_metrics`
+
+---
+
+## Models
+
+From `aide_sdk/models.py` (pydantic v2):
+
+```python
+class ScraperEntry(BaseModel):
+    member: str
+    category: Literal["absence", "approval", "metric", "alert", "task", "event"]
+    title: str
+    detail: str | None = None
+    entry_date: date               # datetime.date
+    priority: Literal["info", "warning", "critical"] = "info"
+    link: str | None = None
+    metadata: dict[str, Any] | None = None
+
+class TeamMemberEntry(BaseModel):
+    name: str
+    email: str = ""
+    role: str = ""
+    department: str = ""
+    branch: str = ""
+    registration: str = ""
+    manager_registration: str = ""  # empty string = no manager (root)
+
+class MetricEntry(BaseModel):
+    name: str
+    value: float
+
+PluginEntry = ScraperEntry  # alias
+```
+
+---
+
+## JSON protocol (aide_sdk/runtime.py)
+
+The CLI sends a single JSON object on **stdin** and reads a single JSON object from **stdout**.
+
+### Inbound (stdin)
+
+| Action     | Additional fields                              |
+|------------|------------------------------------------------|
+| `describe` | —                                              |
+| `scrape`   | `config`, `secrets`                            |
+| `render`   | `heading`, `items: list[dict]`, `config`       |
+| `query`    | `name`, `params: dict`, `config`, `secrets`    |
+
+### Outbound (stdout)
+
+Success:
+```json
+{
+  "protocol_version": "1",
+  "ok": true,
+  "entries": [...],
+  "team_members": [...],
+  "metrics": [...]
+}
+```
+
+Failure:
+```json
+{ "ok": false, "error": "description" }
+```
+
+**Critical:** `sys.stdout` is redirected to `sys.stderr` by `runtime.serve()` before your code
+runs. Any `print()` call goes to stderr and is never seen by the CLI. This is intentional.
+
+---
+
+## Sandbox
+
+| OS      | Mechanism             | Network              | Write access                    |
+|---------|-----------------------|----------------------|---------------------------------|
+| macOS   | `sandbox-exec`        | declared hosts only  | plugin dir under `AIDE_HOME`    |
+| Linux   | `bwrap`               | `--unshare-net` if no network declared | plugin dir |
+| Windows | none (warning logged) | unrestricted         | unrestricted                    |
+
+`browser: true` in the manifest relaxes the macOS/Linux sandbox to allow Playwright's browser path.
+
+---
+
+## State and sessions
+
+Use `$AIDE_HOME` (not `~/.aide`). Canonical helper:
+
+```python
+import os
+from pathlib import Path
+
+def _sessions_dir() -> Path:
+    aide_home = os.environ.get("AIDE_HOME") or str(Path.home() / ".aide")
+    p = Path(aide_home) / "plugins" / "<name>" / "sessions"
+    p.mkdir(parents=True, exist_ok=True)
+    return p
+```
+
+---
+
+## Lint
+
+Plugins must pass `ruff check` using the shared `ruff.toml` at the repo root:
+
+```
+cd aide-plugins && ruff check plugins --fix && ruff format plugins
+```
+
+Rules in effect: `E`, `F`, `I` (import order), `UP`, `B`, `SIM`, `C4`, `RET`. `E501` (line length)
+is ignored — use your judgement.
+
+---
+
+## Adding a new plugin checklist
+
+1. Create `plugins/<name>/` with `plugin.yaml`, `requirements.txt`, `__main__.py`, `scraper.py`.
+2. Subclass `BaseScraper`; implement `scrape()` at minimum.
+3. Set `name`, `version`, `categories` as class attributes.
+4. Declare all outbound hosts in `capabilities.network`.
+5. Run `ruff check plugins/<name> --fix && ruff format plugins/<name>`.
+6. Test locally: `aide scrape <name>` with `AIDE_HOME` pointing at a sandbox directory.
+7. Ensure no `print()` calls exist in `scraper.py` or `__main__.py`.

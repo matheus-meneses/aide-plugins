@@ -1,0 +1,23 @@
+name: rh_portal
+version: 1.0.0
+runtime: python
+description: "RH Portal - vacation approvals and absence tracking"
+categories: [approval, absence]
+entrypoint:
+  python:
+    script: __main__.py
+requirements: requirements.txt
+config:
+  - { key: base_url, label: "RH Portal URL", required: true }
+  - { key: team_depth, label: "Team hierarchy depth", required: false, default: "10", type: integer }
+credentials:
+  - { key: username, label: "AD Username" }
+  - { key: password, label: "AD Password", secret: true }
+capabilities:
+  network: ["portalrh.bancointer.com.br"]
+  browser: true
+  filesystem:
+    - read: "~/.aide/plugins/rh_portal/sessions/"
+    - write: "~/.aide/plugins/rh_portal/sessions/"
+render:
+  custom: false
