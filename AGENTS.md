@@ -229,6 +229,57 @@ runs. Any `print()` call goes to stderr and is never seen by the CLI. This is in
 
 ---
 
+## Go plugins
+
+Plugins are not limited to Python. A plugin may declare `runtime: go` and ship a compiled binary
+instead of a Python package. The host runs `<plugin_dir>/bin/<entrypoint.go.binary>` over the same
+JSON-on-stdin/stdout protocol — there is no `.venv`, and the sandbox table above still applies.
+
+Layout:
+
+```
+plugins/<name>/
+├── plugin.yaml       runtime: go, entrypoint.go.binary: <name>
+├── go.mod
+├── main.go
+└── bin/<name>        compiled binary (one per platform in the registry)
+```
+
+Manifest delta from the Python form:
+
+```yaml
+runtime: go
+entrypoint:
+  go:
+    binary: my-go-source     # → executed at bin/my-go-source (bin/my-go-source.exe on Windows)
+```
+
+The SDK is `github.com/matheus-meneses/aide-sdk-go` (the `sdk/go` package in the aide repo).
+Implement a `Handler` and pass it to `plugin.Serve`. There is no `BaseScraper`; you construct the
+`Response` directly.
+
+```go
+package main
+
+import sdk "github.com/matheus-meneses/aide-sdk-go"
+
+type handler struct{}
+
+func (handler) Handle(req *sdk.Request) (*sdk.Response, error) {
+	sdk.Log.Debugf("connecting...")          // hidden unless `aide -v`
+	return &sdk.Response{OK: true, Entries: []any{ /* ScraperEntry-shaped maps */ }}, nil
+}
+
+func main() { sdk.Serve(handler{}) }
+```
+
+Rules unchanged: stdout is reserved for the protocol (`plugin.Serve` writes the response there) —
+log only via `sdk.Log.Debugf/Infof/Warnf/Errorf`, which go to stderr. Declare every outbound host
+in `capabilities.network`. Never persist secrets. In the registry, Go plugins publish one artifact
+per platform under the keys `go/<goos>_<goarch>` (e.g. `go/darwin_arm64`, `go/linux_amd64`).
+
+---
+
 ## State and sessions
 
 Use `$AIDE_HOME` (not `~/.aide`). Canonical helper:
