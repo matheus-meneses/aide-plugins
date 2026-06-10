@@ -23,7 +23,7 @@ class GitlabScraper(BaseScraper):
             raise ValueError("Credential 'token' is required")
 
         self._log("Connecting to GitLab...")
-        gl = gitlab.Gitlab(base_url, private_token=token, ssl_verify=self.verify_ssl)
+        gl = gitlab.Gitlab(base_url, private_token=token, ssl_verify=self.tls_verify)
         try:
             gl.auth()
         except Exception as e:

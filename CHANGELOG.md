@@ -22,8 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Plugins honor the `verify_ssl` runtime value from the request context; the
-  `gitlab` plugin no longer hardcodes `ssl_verify=False`.
+- Plugins honor the CLI-resolved TLS policy (`verify_ssl` + `ca_bundle`) from the
+  request context. Trusting a CA is automatic via the SDK — an explicit
+  `ca_bundle`, otherwise the OS trust store (`truststore`), so corporate MITM
+  roots already installed by IT just work. The `gitlab` plugin now passes
+  `ssl_verify=self.tls_verify` and no longer hardcodes `ssl_verify=False`.
 
 [Unreleased]: https://github.com/matheus-meneses/aide-plugins/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/matheus-meneses/aide-plugins/releases/tag/v0.1.0
