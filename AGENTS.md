@@ -43,20 +43,37 @@ The log level and format are selected by the user via `aide -v` / `aide --log-fo
 passed through `Request.Context` as `log_level` and `log_format`. The `Logger.from_context()`
 class method reads them; this is called by the runtime — you do not need to call it yourself.
 
-## TLS verification
+## TLS
 
-TLS verification is a standard runtime value, injected into every plugin run via `Request.Context`
-as `verify_ssl` (default `true`), exactly like `log_level` and `log_format`. The user controls it
-with the global `aide --verify-ssl` flag. It is never per-plugin config.
+TLS is the **CLI's** concern, never the plugin's. The CLI resolves the policy (flag >
+per-source config > global config > secure default) and injects two runtime values into every
+plugin run via `Request.Context`:
 
-Read it through the SDK and pass it to your HTTP/client library:
+| Key | Default | Set by |
+|-----|---------|--------|
+| `verify_ssl` | `true` | `aide --verify-ssl=false`, or `settings.tls.verify_ssl` / `sources.<name>.tls.verify_ssl` |
+| `ca_bundle` | `""` | `aide --ca-bundle <pem>`, or `settings.tls.ca_bundle` / `sources.<name>.tls.ca_bundle` |
+
+**Trusting a corporate CA is automatic** and needs **zero plugin code**. When verification is on,
+the Python SDK resolves trust in this order before your scraper runs:
+
+1. **Explicit `ca_bundle`** → exported as `REQUESTS_CA_BUNDLE` / `SSL_CERT_FILE` so `requests`,
+   `python-gitlab`, `httpx`, and `urllib` use it.
+2. **Otherwise the OS trust store** → the SDK calls `truststore.inject_into_ssl()`, so any CA your
+   IT/MDM already installed in the system keychain (corporate MITM proxies like Zscaler, internal
+   roots) is trusted without a PEM file. This is the common corporate case.
+
+For the bypass case (which no env var can express for `requests`), pass the SDK's single resolved
+value to your client. `self.tls_verify` is `False`, `True`, or the CA path — exactly the shape
+`requests`/`python-gitlab` expect:
 
 ```python
-client = SomeClient(base_url, token=token, ssl_verify=self.verify_ssl)
+client = SomeClient(base_url, token=token, ssl_verify=self.tls_verify)
 ```
 
-`self.verify_ssl` (Python, via `BaseScraper`) and `plugin.VerifySSL` (Go) both default to secure
-(`true`) when the key is absent. Never hardcode `verify=False` / `ssl_verify=False`.
+Go plugins read `plugin.VerifySSL` / `plugin.CABundle`, or use the prebuilt `plugin.TLSConfig()`.
+Both SDKs default to secure (`verify_ssl: true`, no bundle) when the keys are absent. Never
+hardcode `verify=False` / `ssl_verify=False`, and never read TLS settings from plugin config.
 
 ---
 
