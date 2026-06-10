@@ -5,6 +5,11 @@
 **/build/
 **/*.egg-info/
 /dist/
+.ruff_cache/
+
+# IDE
+.idea/
+*.iml
 
 # playwright browser cache
 **/ms-playwright/

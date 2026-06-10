@@ -1,61 +1,31 @@
 plugins:
   gitlab:
-    latest: 1.0.0
+    latest: 0.1.0
     description: "GitLab merge requests, work items, and reviews"
     versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-1.0.0.plugin.yaml"
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-1.0.0.tar.gz"
-            sha256: "2f8069146b6b675cf81c725ade4200dc3a8ada24fe5daaaa8ddba566ff2a58d0"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.tar.gz"
+            sha256: "97a808c5e20f7ed187084180f28e9e43f3c9e057d2113f4b3c747cb0eefeec24"
   jira:
-    latest: 1.0.0
+    latest: 0.1.0
     description: "Jira issues, approvals, and ticket metrics"
     versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-1.0.0.plugin.yaml"
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-1.0.0.tar.gz"
-            sha256: "eaf2a130d9ecd351cb475176c250ea14918c9a997b7121234586fa2d51f7eb3f"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.tar.gz"
+            sha256: "d1f5286a10442d3fd803cdf720aa7e8cc02b43da67d8db4a3f8dadd3f9d06707"
   outlook:
-    latest: 1.0.0
+    latest: 0.1.0
     description: "Microsoft Outlook calendar events and inbox unread count"
     versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-1.0.0.plugin.yaml"
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-1.0.0.tar.gz"
-            sha256: "dca32a3943b940d7e810bb9d7b581e5cfe35837ad042b5421f71c9584c413be3"
-  rh_management_portal:
-    latest: 1.0.0
-    description: "RH Management Portal - team absences, events, and tasks"
-    versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_management_portal-1.0.0.plugin.yaml"
-        artifacts:
-          python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_management_portal-1.0.0.tar.gz"
-            sha256: "ab0e7397f6dee2a2cf5c1d714516a7ea5f52d99dae7539045c003370a8febb47"
-  rh_portal:
-    latest: 1.0.0
-    description: "RH Portal - vacation approvals and absence tracking"
-    versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_portal-1.0.0.plugin.yaml"
-        artifacts:
-          python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_portal-1.0.0.tar.gz"
-            sha256: "a2e680afe7212fad915a8beda66d1688fcdf840ddc8d58319a3b5bed948565f4"
-  sailpoint:
-    latest: 1.0.0
-    description: "SailPoint IdentityNow access-request approvals and certifications"
-    versions:
-      - version: 1.0.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-1.0.0.plugin.yaml"
-        artifacts:
-          python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-1.0.0.tar.gz"
-            sha256: "d0411d240e4336b61a1ec96876434ecf6943830b8f653ea965d46ad77845a5af"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.tar.gz"
+            sha256: "3093b4f63ae7ea964c5817170c41285d2957678807f40b433f2eee451ec0b094"

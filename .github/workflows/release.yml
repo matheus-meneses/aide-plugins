@@ -13,14 +13,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Guard - tag matches plugin versions
+        run: |
+          CORE="${GITHUB_REF_NAME#v}"; CORE="${CORE%%-*}"
+          fail=0
+          for m in plugins/*/plugin.yaml; do
+            v="$(awk '/^version:/{print $2; exit}' "$m")"
+            [ "$v" = "$CORE" ] || { echo "::error::$m is $v, expected $CORE"; fail=1; }
+          done
+          [ "$fail" = 0 ]
+
       - name: Build registry and plugin artifacts
         env:
           REPO: ${{ github.repository }}
+          ASSET_BASE: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
         run: bash scripts/build-registry.sh
 
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             dist/index.yaml
             dist/*.tar.gz

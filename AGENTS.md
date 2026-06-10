@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repo contains community plugins for [aide](https://github.com/your-org/aide). Each plugin is
+This repo contains community plugins for [aide](https://github.com/matheus-meneses/aide). Each plugin is
 an isolated Python package run in a sandboxed subprocess by the aide CLI.
 
 ---
@@ -42,6 +42,21 @@ Rules:
 The log level and format are selected by the user via `aide -v` / `aide --log-format json` and
 passed through `Request.Context` as `log_level` and `log_format`. The `Logger.from_context()`
 class method reads them; this is called by the runtime — you do not need to call it yourself.
+
+## TLS verification
+
+TLS verification is a standard runtime value, injected into every plugin run via `Request.Context`
+as `verify_ssl` (default `true`), exactly like `log_level` and `log_format`. The user controls it
+with the global `aide --verify-ssl` flag. It is never per-plugin config.
+
+Read it through the SDK and pass it to your HTTP/client library:
+
+```python
+client = SomeClient(base_url, token=token, ssl_verify=self.verify_ssl)
+```
+
+`self.verify_ssl` (Python, via `BaseScraper`) and `plugin.VerifySSL` (Go) both default to secure
+(`true`) when the key is absent. Never hardcode `verify=False` / `ssl_verify=False`.
 
 ---
 
@@ -305,7 +320,7 @@ Plugins must pass `ruff check` using the shared `ruff.toml` at the repo root:
 cd aide-plugins && ruff check plugins --fix && ruff format plugins
 ```
 
-Rules in effect: `E`, `F`, `I` (import order), `UP`, `B`, `SIM`, `C4`, `RET`. `E501` (line length)
+Rules in effect: `E`, `F`, `W`, `I` (import order), `UP`, `B`, `C4`, `SIM`, `RUF`. `E501` (line length)
 is ignored — use your judgement.
 
 ---

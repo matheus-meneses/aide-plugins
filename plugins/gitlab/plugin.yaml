@@ -1,5 +1,5 @@
 name: gitlab
-version: 1.0.0
+version: 0.1.0
 runtime: python
 description: "GitLab merge requests, work items, and reviews"
 categories: [task]

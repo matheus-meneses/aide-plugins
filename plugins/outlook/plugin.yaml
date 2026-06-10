@@ -1,5 +1,5 @@
 name: outlook
-version: 1.0.0
+version: 0.1.0
 runtime: python
 description: "Microsoft Outlook calendar events and inbox unread count"
 categories: [event, metric]

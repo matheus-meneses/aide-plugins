@@ -1,5 +1,5 @@
 name: jira
-version: 1.0.0
+version: 0.1.0
 runtime: python
 description: "Jira issues, approvals, and ticket metrics"
 categories: [task, metric]
@@ -29,4 +29,4 @@ tools:
   - name: jira_ticket
     description: "Fetch details for a specific Jira ticket by key (e.g. PROJ-123)."
     params:
-      key: "required, e.g. IAC-128972"
+      key: "required, e.g. PROJ-123"
