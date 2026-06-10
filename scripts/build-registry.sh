@@ -35,6 +35,7 @@ for plugin_dir in "${PLUGINS_DIR}"/*/; do
   name="$(field name "${manifest}")"
   version="$(field version "${manifest}")"
   runtime="$(field runtime "${manifest}")"
+  description="$(field description "${manifest}")"
 
   if [ -z "${name}" ] || [ -z "${version}" ] || [ -z "${runtime}" ]; then
     echo "skip: ${plugin_dir} missing name/version/runtime" >&2
@@ -56,6 +57,9 @@ for plugin_dir in "${PLUGINS_DIR}"/*/; do
   {
     echo "  ${name}:"
     echo "    latest: ${version}"
+    if [ -n "${description}" ]; then
+      echo "    description: \"${description}\""
+    fi
     echo "    versions:"
     echo "      - version: ${version}"
     echo "        manifest_url: \"${ASSET_BASE}/${manifest_asset}\""

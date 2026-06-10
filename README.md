@@ -201,12 +201,18 @@ aide merges every configured registry with the builtin one (builtin wins on name
 
 ## Dev workflow
 
-Test a plugin straight from the working tree before publishing:
+The `aide dev` toolkit scaffolds, runs, and packages a plugin without installing it — a tight loop for humans and AI agents alike:
 
 ```sh
-aide plugin install --local plugins/my-source --yes
+aide dev new my-source --runtime python --category task   # scaffold (Python or Go)
+aide dev validate my-source                               # check the manifest + layout
+aide dev test my-source                                   # run scrape locally, print entries
+aide dev test my-source --json                            # machine-readable result for agents
+aide dev package my-source                                # build the tar.gz + print its index entry
 ruff check plugins --fix && ruff format plugins
 ```
+
+Every `dev` subcommand is fully flag-driven (no prompts needed) and supports `--json`, so an agent can run the whole scaffold/validate/test/fix loop autonomously. `aide dev schema` prints the `plugin.yaml` JSON Schema. You can also install straight from the working tree with `aide plugin install --local plugins/my-source --yes`.
 
 ## Contributing
 

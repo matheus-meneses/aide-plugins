@@ -312,11 +312,11 @@ is ignored — use your judgement.
 
 ## Adding a new plugin checklist
 
-1. Create `plugins/<name>/` with `plugin.yaml`, `requirements.txt`, `__main__.py`, `scraper.py`.
+1. Scaffold: `aide dev new <name> --runtime python --category <cat>` (creates `plugin.yaml`, `requirements.txt`, `__main__.py`, `scraper.py`, `AGENTS.md`).
 2. Subclass `BaseScraper`; implement `scrape()` at minimum.
 3. Set `name`, `version`, `categories` as class attributes.
 4. Declare all outbound hosts in `capabilities.network`.
 5. Use `self.log.debug/info/warning/error` for all output. No `print()`, no direct `sys.stderr`.
 6. Run `ruff check plugins/<name> --fix && ruff format plugins/<name>`.
-7. Test locally: `aide scrape <name>` with `AIDE_HOME` pointing at a sandbox directory.
-8. Verify `aide -v scrape <name>` shows debug lines; `aide scrape <name>` (no `-v`) does not.
+7. Validate the manifest: `aide dev validate plugins/<name>` (add `--json` for structured errors).
+8. Test locally: `aide dev test plugins/<name>` runs `scrape` and prints entries; `--json` emits `{ok, entries, ..., logs, exit_code}`; add `-v` for debug logs. No install required.
