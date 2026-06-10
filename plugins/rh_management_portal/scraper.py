@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 from typing import ClassVar
 
@@ -65,7 +64,7 @@ class RHManagementPortalScraper(BaseScraper):
             return entries
 
     def _log(self, msg: str) -> None:
-        print(msg, file=sys.stderr, flush=True)
+        self.log.debug(msg)
 
     def _get_context(self, p: Playwright) -> BrowserContext:
         browser = p.chromium.launch(headless=True)

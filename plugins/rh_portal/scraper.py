@@ -1,6 +1,5 @@
 import contextlib
 import os
-import sys
 from datetime import date, datetime
 from pathlib import Path
 from typing import ClassVar
@@ -121,8 +120,9 @@ class RHPortalScraper(BaseScraper):
             context.close()
             return members
 
-    def _walk_team(self, page: Page, api_root: str, encoded_id: str, manager_reg: str,
-                   depth: int, max_depth: int, seen: set[str]) -> list[TeamMemberEntry]:
+    def _walk_team(
+        self, page: Page, api_root: str, encoded_id: str, manager_reg: str, depth: int, max_depth: int, seen: set[str]
+    ) -> list[TeamMemberEntry]:
         members: list[TeamMemberEntry] = []
         items = self._fetch_reports(page, api_root, encoded_id)
         indent = "    " * (depth + 1)
@@ -140,9 +140,7 @@ class RHPortalScraper(BaseScraper):
             if depth + 1 < max_depth:
                 child_id = str(item.get("id") or "").replace("|", "%7C")
                 if child_id:
-                    members.extend(
-                        self._walk_team(page, api_root, child_id, reg, depth + 1, max_depth, seen)
-                    )
+                    members.extend(self._walk_team(page, api_root, child_id, reg, depth + 1, max_depth, seen))
 
         return members
 
@@ -161,7 +159,7 @@ class RHPortalScraper(BaseScraper):
                     url,
                 )
             except Exception as e:
-                self._log(f"  Error fetching reports for {encoded_id}: {e}")
+                self.log.warning(f"error fetching reports for {encoded_id}: {e}")
                 break
 
             if not isinstance(resp, dict):
@@ -200,7 +198,9 @@ class RHPortalScraper(BaseScraper):
             if depth >= max_depth:
                 continue
 
-            cards = current_page.locator("po-list-view-content-template, .po-list-view-item, po-tree-view-item, .member-card, [class*='employee'], [class*='collaborator']").all()
+            cards = current_page.locator(
+                "po-list-view-content-template, .po-list-view-item, po-tree-view-item, .member-card, [class*='employee'], [class*='collaborator']"
+            ).all()
             self._log(f"  Depth {depth}: {len(cards)} cards found")
 
             for card in cards:
@@ -229,7 +229,9 @@ class RHPortalScraper(BaseScraper):
 
                     if depth + 1 < max_depth:
                         try:
-                            btn = card.locator("button[aria-label*='equipe'], button[aria-label*='team'], button[aria-label*='subordinat'], a[href*='teamManagement']").first
+                            btn = card.locator(
+                                "button[aria-label*='equipe'], button[aria-label*='team'], button[aria-label*='subordinat'], a[href*='teamManagement']"
+                            ).first
                             if btn.is_visible(timeout=500):
                                 btn.click()
                                 current_page.wait_for_timeout(3000)
@@ -239,12 +241,12 @@ class RHPortalScraper(BaseScraper):
                         except Exception:
                             pass
                 except Exception as e:
-                    self._log(f"  Error parsing card at depth {depth}: {e}")
+                    self.log.warning(f"error parsing card at depth {depth}: {e}")
 
         return members
 
     def _log(self, msg: str) -> None:
-        print(msg, file=sys.stderr, flush=True)
+        self.log.debug(msg)
 
     def _get_context(self, p: Playwright) -> BrowserContext:
         browser = p.chromium.launch(headless=True)
@@ -312,21 +314,27 @@ class RHPortalScraper(BaseScraper):
                 title = f"{name} - {vac_type} ({start} to {end}, {days} days)"
                 entry_date = self._parse_date_str(start) or date.today()
 
-                entries.append(PluginEntry(
-                    source="rh_portal",
-                    member=name,
-                    category="approval",
-                    title=title,
-                    detail=f"Vesting: {vesting}",
-                    entry_date=entry_date,
-                    priority="warning",
-                    metadata={
-                        "name": name, "type": vac_type, "vesting": vesting,
-                        "start": start, "end": end, "days": days,
-                    },
-                ))
+                entries.append(
+                    PluginEntry(
+                        source="rh_portal",
+                        member=name,
+                        category="approval",
+                        title=title,
+                        detail=f"Vesting: {vesting}",
+                        entry_date=entry_date,
+                        priority="warning",
+                        metadata={
+                            "name": name,
+                            "type": vac_type,
+                            "vesting": vesting,
+                            "start": start,
+                            "end": end,
+                            "days": days,
+                        },
+                    )
+                )
             except Exception as e:
-                self._log(f"  Error parsing vacation row: {e}")
+                self.log.warning(f"error parsing vacation row: {e}")
 
         return entries
 
@@ -367,7 +375,12 @@ class RHPortalScraper(BaseScraper):
                     if not role and name and line == line.upper() and len(line) > 3:
                         role = line
                         i += 1
-                        if i < len(lines) and lines[i] == lines[i].upper() and len(lines[i]) > 3 and "BALANCE" not in lines[i].upper():
+                        if (
+                            i < len(lines)
+                            and lines[i] == lines[i].upper()
+                            and len(lines[i]) > 3
+                            and "BALANCE" not in lines[i].upper()
+                        ):
                             status_tag = lines[i]
                             i += 1
                         continue
@@ -413,22 +426,28 @@ class RHPortalScraper(BaseScraper):
                 title = f"{name} - {balance} ({status_tag})" if status_tag else f"{name} - {balance}"
                 detail = f"Grant: {grant_period} | Ref: {ref_period} | Stage: {stage}"
 
-                entries.append(PluginEntry(
-                    source="rh_portal",
-                    member=name,
-                    category="absence",
-                    title=title,
-                    detail=detail,
-                    entry_date=entry_date,
-                    priority=priority,
-                    metadata={
-                        "name": name, "role": role, "status": status_tag,
-                        "balance": balance, "grant_period": grant_period,
-                        "ref_period": ref_period, "stage": stage,
-                    },
-                ))
+                entries.append(
+                    PluginEntry(
+                        source="rh_portal",
+                        member=name,
+                        category="absence",
+                        title=title,
+                        detail=detail,
+                        entry_date=entry_date,
+                        priority=priority,
+                        metadata={
+                            "name": name,
+                            "role": role,
+                            "status": status_tag,
+                            "balance": balance,
+                            "grant_period": grant_period,
+                            "ref_period": ref_period,
+                            "stage": stage,
+                        },
+                    )
+                )
             except Exception as e:
-                self._log(f"  Error parsing absence card: {e}")
+                self.log.warning(f"error parsing absence card: {e}")
 
         return entries
 

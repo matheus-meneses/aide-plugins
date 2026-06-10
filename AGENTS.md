@@ -12,11 +12,36 @@ an isolated Python package run in a sandboxed subprocess by the aide CLI.
 - Write idiomatic Python 3.11+. Use type annotations everywhere.
 - No narrating comments. Only comments that explain *why*.
 - **NEVER write to stdout.** The `aide_sdk` runtime redirects `sys.stdout → stderr` at startup to
-  reserve stdout for the JSON protocol. All logging and debug output must go to `sys.stderr` or
-  Python `logging` (which defaults to stderr).
+  reserve stdout for the JSON protocol.
 - Use `$AIDE_HOME`, not hardcoded `~/.aide`. See the sessions helper below.
 - Declare every outbound hostname in `capabilities.network`. The sandbox denies undeclared hosts.
 - Secrets injected at runtime must never be written to disk or logged.
+
+---
+
+## Logging
+
+Every scraper has a `self.log` attribute (a `Logger` instance from `aide_sdk`) configured
+automatically by `runtime.serve()` from the request context before any action runs. You do not
+need to instantiate it.
+
+```python
+self.log.debug("Connecting to service...")   # hidden by default, shown with aide -v
+self.log.info("Run complete")                # always visible
+self.log.warning("No items returned; check credentials")  # always visible
+self.log.error(f"Authentication failed: {e}")             # always visible
+```
+
+Rules:
+- Progress chatter (connecting, page counts, pagination steps) → `self.log.debug`.
+- Degraded-but-recoverable situations → `self.log.warning`.
+- Failures that result in partial or empty data → `self.log.error`.
+- **Never** call `print()` in scraper code. Never write to `sys.stdout` or `sys.stderr` directly.
+- `self.log` writes to the real stderr, unaffected by the `sys.stdout` redirect in `runtime.py`.
+
+The log level and format are selected by the user via `aide -v` / `aide --log-format json` and
+passed through `Request.Context` as `log_level` and `log_format`. The `Logger.from_context()`
+class method reads them; this is called by the runtime — you do not need to call it yourself.
 
 ---
 
@@ -240,6 +265,7 @@ is ignored — use your judgement.
 2. Subclass `BaseScraper`; implement `scrape()` at minimum.
 3. Set `name`, `version`, `categories` as class attributes.
 4. Declare all outbound hosts in `capabilities.network`.
-5. Run `ruff check plugins/<name> --fix && ruff format plugins/<name>`.
-6. Test locally: `aide scrape <name>` with `AIDE_HOME` pointing at a sandbox directory.
-7. Ensure no `print()` calls exist in `scraper.py` or `__main__.py`.
+5. Use `self.log.debug/info/warning/error` for all output. No `print()`, no direct `sys.stderr`.
+6. Run `ruff check plugins/<name> --fix && ruff format plugins/<name>`.
+7. Test locally: `aide scrape <name>` with `AIDE_HOME` pointing at a sandbox directory.
+8. Verify `aide -v scrape <name>` shows debug lines; `aide scrape <name>` (no `-v`) does not.

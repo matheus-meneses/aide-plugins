@@ -1,5 +1,4 @@
 import os
-import sys
 from datetime import date, datetime
 from pathlib import Path
 from typing import ClassVar
@@ -72,12 +71,14 @@ class SailpointScraper(BaseScraper):
             certs = self._extract_certifications(context)
             entries.extend(certs)
 
-            self._log(f"Done. {len(entries)} entries collected ({len(approvals)} approvals, {len(certs)} certifications).")
+            self._log(
+                f"Done. {len(entries)} entries collected ({len(approvals)} approvals, {len(certs)} certifications)."
+            )
             context.close()
             return entries
 
     def _log(self, msg: str) -> None:
-        print(msg, file=sys.stderr, flush=True)
+        self.log.debug(msg)
 
     def _get_context(self, p: Playwright) -> BrowserContext:
         browser = p.chromium.launch(headless=True)
@@ -206,7 +207,8 @@ class SailpointScraper(BaseScraper):
             approval_id = item.get("id", "")
             web_url = (
                 f"https://{self._portal_domain}/ui/d/approvals/{approval_id}"
-                if approval_id else f"https://{self._portal_domain}/ui/d/approvals"
+                if approval_id
+                else f"https://{self._portal_domain}/ui/d/approvals"
             )
 
             return PluginEntry(
@@ -229,7 +231,8 @@ class SailpointScraper(BaseScraper):
                     "web_url": web_url,
                 },
             )
-        except Exception:
+        except Exception as e:
+            self.log.warning(f"failed to parse approval item: {e}")
             return None
 
     def _extract_certifications(self, context: BrowserContext) -> list[PluginEntry]:
@@ -342,7 +345,8 @@ class SailpointScraper(BaseScraper):
                     "total": total,
                 },
             )
-        except Exception:
+        except Exception as e:
+            self.log.warning(f"failed to parse certification item: {e}")
             return None
 
     def _parse_date(self, iso_str: str) -> date:

@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import sys
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import ClassVar
@@ -124,7 +123,7 @@ class OutlookScraper(BaseScraper):
             pass
 
     def _log(self, msg: str) -> None:
-        print(msg, file=sys.stderr, flush=True)
+        self.log.debug(msg)
 
     def _needs_login(self, page: Page) -> bool:
         url = page.url
@@ -158,11 +157,7 @@ class OutlookScraper(BaseScraper):
                 except Exception:
                     pass
 
-            is_calendar = (
-                "GetCalendarView" in url
-                or "calendarView" in url
-                or "calendar/events" in url
-            )
+            is_calendar = "GetCalendarView" in url or "calendarView" in url or "calendar/events" in url
             if is_calendar:
                 try:
                     body = response.body()
@@ -227,8 +222,7 @@ class OutlookScraper(BaseScraper):
                 or {}
             )
             organizer_name = (
-                mailbox.get("Name") or mailbox.get("name")
-                or mailbox.get("Address") or mailbox.get("address") or ""
+                mailbox.get("Name") or mailbox.get("name") or mailbox.get("Address") or mailbox.get("address") or ""
             )
 
             start_dt = self._parse_graph_datetime(start)
@@ -249,16 +243,18 @@ class OutlookScraper(BaseScraper):
 
             entry_date = start_dt.date() if start_dt else date.today()
 
-            entries.append(PluginEntry(
-                source="outlook",
-                member=organizer_name,
-                category="event",
-                title=f"Meeting: {subject}",
-                detail=f"{start_str_display} ({duration})" if duration else start_str_display,
-                entry_date=entry_date,
-                priority="info",
-                metadata={"mode": "items"},
-            ))
+            entries.append(
+                PluginEntry(
+                    source="outlook",
+                    member=organizer_name,
+                    category="event",
+                    title=f"Meeting: {subject}",
+                    detail=f"{start_str_display} ({duration})" if duration else start_str_display,
+                    entry_date=entry_date,
+                    priority="info",
+                    metadata={"mode": "items"},
+                )
+            )
         return entries
 
     def _scrape_mail_count(self, current_page: Page, context: BrowserContext) -> list[PluginEntry]:
@@ -274,12 +270,7 @@ class OutlookScraper(BaseScraper):
             url = response.url
             if response.status != 200:
                 return
-            is_mail_folder = (
-                "FindFolder" in url
-                or "GetFolder" in url
-                or "mailFolders" in url
-                or "MailFolders" in url
-            )
+            is_mail_folder = "FindFolder" in url or "GetFolder" in url or "mailFolders" in url or "MailFolders" in url
             if is_mail_folder:
                 try:
                     body = response.body()
@@ -298,16 +289,18 @@ class OutlookScraper(BaseScraper):
 
         unread = captured_count[0]
         self._log(f"    Inbox unread: {unread}")
-        return [PluginEntry(
-            source="outlook",
-            member="",
-            category="metric",
-            title="Inbox Unread",
-            detail=str(unread),
-            entry_date=date.today(),
-            priority="info",
-            metadata={"mode": "metric", "metric_value": unread},
-        )]
+        return [
+            PluginEntry(
+                source="outlook",
+                member="",
+                category="metric",
+                title="Inbox Unread",
+                detail=str(unread),
+                entry_date=date.today(),
+                priority="info",
+                metadata={"mode": "metric", "metric_value": unread},
+            )
+        ]
 
     def _fetch_calendar_folders(self, page: Page, folder_id_to_name: dict[str, str]) -> None:
         self._log("    Fetching calendar folders via Graph API...")
@@ -331,14 +324,11 @@ class OutlookScraper(BaseScraper):
                         folder_id_to_name[cal_id] = cal_name
                 self._log(f"    Fetched {len(folder_id_to_name)} calendars")
         except Exception as e:
-            self._log(f"    Failed to fetch calendar folders: {e}")
+            self.log.error(f"failed to fetch calendar folders: {e}")
 
     def _filter_by_calendar(self, events: list[dict], folder_id_to_name: dict[str, str]) -> list[dict]:
         if folder_id_to_name:
-            allowed_ids = {
-                fid for fid, fname in folder_id_to_name.items()
-                if fname.lower() in self._allowed_calendars
-            }
+            allowed_ids = {fid for fid, fname in folder_id_to_name.items() if fname.lower() in self._allowed_calendars}
             if allowed_ids:
                 before = len(events)
                 events = [ev for ev in events if ev.get("ParentFolderId", {}).get("Id", "") in allowed_ids]
@@ -352,16 +342,12 @@ class OutlookScraper(BaseScraper):
         return events
 
     def _is_shared_calendar_event(self, event: dict) -> bool:
-        calendar_name = (
-            event.get("Calendar", {}).get("Name", "")
-            if isinstance(event.get("Calendar"), dict) else ""
-        )
+        calendar_name = event.get("Calendar", {}).get("Name", "") if isinstance(event.get("Calendar"), dict) else ""
         if calendar_name and calendar_name.lower() not in self._allowed_calendars:
             return True
         is_organizer = event.get("IsOrganizer", event.get("isOrganizer"))
-        response_status = (
-            event.get("ResponseStatus", {}).get("Response", "")
-            or event.get("responseStatus", {}).get("response", "")
+        response_status = event.get("ResponseStatus", {}).get("Response", "") or event.get("responseStatus", {}).get(
+            "response", ""
         )
         return bool(response_status.lower() in ("none", "notresponded") and is_organizer is False)
 
@@ -447,10 +433,12 @@ def _render_calendar(items: list[dict]) -> list[str]:
     now = datetime.now()
 
     future = [i for i in items if (i.get("entry_date") or "") >= today_str]
-    future.sort(key=lambda i: (
-        i.get("entry_date", ""),
-        _parse_detail(i.get("detail", ""))[0],
-    ))
+    future.sort(
+        key=lambda i: (
+            i.get("entry_date", ""),
+            _parse_detail(i.get("detail", ""))[0],
+        )
+    )
 
     by_day: dict[str, list[dict]] = {}
     order: list[str] = []

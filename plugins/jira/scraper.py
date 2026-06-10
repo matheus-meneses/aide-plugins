@@ -1,4 +1,3 @@
-import sys
 from datetime import date, datetime
 from typing import ClassVar
 
@@ -36,6 +35,8 @@ class JiraScraper(BaseScraper):
         session.headers["Accept"] = "application/json"
 
         myself = session.get(f"{base_url}/rest/api/3/myself")
+        if not myself.ok:
+            self.log.error(f"Jira authentication failed ({myself.status_code}): {myself.text[:200]}")
         myself.raise_for_status()
         display_name = myself.json().get("displayName", email)
         self._log(f"Authenticated as {display_name}")
@@ -43,6 +44,7 @@ class JiraScraper(BaseScraper):
         queries_raw = config.get("queries", [])
         if isinstance(queries_raw, str):
             import json
+
             s = queries_raw.strip()
             if not s:
                 queries_raw = []
@@ -54,7 +56,7 @@ class JiraScraper(BaseScraper):
         queries = []
         for i, q in enumerate(queries_raw):
             if isinstance(q, str):
-                queries.append({"name": f"query_{i+1}", "jql": q, "mode": "items"})
+                queries.append({"name": f"query_{i + 1}", "jql": q, "mode": "items"})
             else:
                 queries.append(q)
 
@@ -79,9 +81,7 @@ class JiraScraper(BaseScraper):
         self._log(f"Done. {len(entries)} entries collected.")
         return entries
 
-    def _run_items_query(
-        self, session: requests.Session, base_url: str, name: str, jql: str
-    ) -> list[PluginEntry]:
+    def _run_items_query(self, session: requests.Session, base_url: str, name: str, jql: str) -> list[PluginEntry]:
         entries = []
         next_page_token = None
 
@@ -90,8 +90,15 @@ class JiraScraper(BaseScraper):
                 "jql": jql,
                 "maxResults": 100,
                 "fields": [
-                    "summary", "assignee", "reporter", "status", "priority",
-                    "created", "updated", "issuetype", "project",
+                    "summary",
+                    "assignee",
+                    "reporter",
+                    "status",
+                    "priority",
+                    "created",
+                    "updated",
+                    "issuetype",
+                    "project",
                 ],
             }
             if next_page_token:
@@ -116,9 +123,7 @@ class JiraScraper(BaseScraper):
         self._log(f"    {name}: {len(entries)} tickets")
         return entries
 
-    def _run_metric_query(
-        self, session: requests.Session, base_url: str, name: str, jql: str
-    ) -> list[PluginEntry]:
+    def _run_metric_query(self, session: requests.Session, base_url: str, name: str, jql: str) -> list[PluginEntry]:
         resp = session.post(
             f"{base_url}/rest/api/3/search/jql",
             json={"jql": jql, "maxResults": 0},
@@ -193,4 +198,4 @@ class JiraScraper(BaseScraper):
             return date.today()
 
     def _log(self, msg: str) -> None:
-        print(msg, file=sys.stderr, flush=True)
+        self.log.debug(msg)
