@@ -1,1 +1,31 @@
-plugins: {}
+plugins:
+  gitlab:
+    latest: 0.1.0
+    description: "GitLab merge requests, work items, and reviews"
+    versions:
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.tar.gz"
+            sha256: "97a808c5e20f7ed187084180f28e9e43f3c9e057d2113f4b3c747cb0eefeec24"
+  jira:
+    latest: 0.1.0
+    description: "Jira issues, approvals, and ticket metrics"
+    versions:
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.tar.gz"
+            sha256: "d1f5286a10442d3fd803cdf720aa7e8cc02b43da67d8db4a3f8dadd3f9d06707"
+  outlook:
+    latest: 0.1.0
+    description: "Microsoft Outlook calendar events and inbox unread count"
+    versions:
+      - version: 0.1.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.tar.gz"
+            sha256: "3093b4f63ae7ea964c5817170c41285d2957678807f40b433f2eee451ec0b094"

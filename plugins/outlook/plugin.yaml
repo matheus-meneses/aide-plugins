@@ -1,0 +1,21 @@
+name: outlook
+version: 0.1.0
+runtime: python
+description: "Microsoft Outlook calendar events and inbox unread count"
+categories: [event, metric]
+entrypoint:
+  python:
+    script: __main__.py
+requirements: requirements.txt
+config:
+  - { key: calendar_days_ahead, label: "Days ahead to fetch", required: false, default: "7", type: integer }
+  - { key: calendars, label: "Allowed calendar names", required: false, type: string_list }
+credentials: []
+capabilities:
+  network: ["outlook.office.com", "outlook.cloud.microsoft", "login.microsoftonline.com", "login.live.com"]
+  browser: true
+  filesystem:
+    - read: "~/.aide/plugins/outlook/sessions/"
+    - write: "~/.aide/plugins/outlook/sessions/"
+render:
+  custom: true

@@ -1,0 +1,18 @@
+# generated / local
+**/__pycache__/
+**/*.pyc
+**/.venv/
+**/build/
+**/*.egg-info/
+/dist/
+.ruff_cache/
+
+# IDE
+.idea/
+*.iml
+
+# playwright browser cache
+**/ms-playwright/
+
+# sessions (browser auth state — never commit)
+**/sessions/*.json
