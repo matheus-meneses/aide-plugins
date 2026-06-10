@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build registry and plugin artifacts
+        env:
+          REPO: ${{ github.repository }}
+        run: bash scripts/build-registry.sh
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/index.yaml
+            dist/*.tar.gz
+            dist/*.plugin.yaml

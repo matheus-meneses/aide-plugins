@@ -4,6 +4,7 @@
 **/.venv/
 **/build/
 **/*.egg-info/
+/dist/
 
 # playwright browser cache
 **/ms-playwright/

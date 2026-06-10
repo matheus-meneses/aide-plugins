@@ -1,54 +1,55 @@
 plugins:
-  jira:
-    name: jira
-    version: 1.0.0
-    description: "Jira issues, approvals, and ticket metrics"
-    categories: [task, metric]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/jira
-
   gitlab:
-    name: gitlab
-    version: 1.0.0
-    description: "GitLab merge requests, work items, and reviews"
-    categories: [task]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/gitlab
-
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-1.0.0.tar.gz"
+            sha256: "e20a0bd58451dcc9cb684db5eba9e91945df183d65937b1874d7528b599676fe"
+  jira:
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-1.0.0.tar.gz"
+            sha256: "051a4e19a638db86bf23f3c98d5f3f1a03ed10d776a8c00d20d9c9617d1eb749"
   outlook:
-    name: outlook
-    version: 1.0.0
-    description: "Microsoft Outlook calendar events and inbox unread count"
-    categories: [event, metric]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/outlook
-
-  sailpoint:
-    name: sailpoint
-    version: 1.0.0
-    description: "SailPoint IdentityNow access-request approvals and certifications"
-    categories: [approval, task]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/sailpoint
-
-  rh_portal:
-    name: rh_portal
-    version: 1.0.0
-    description: "RH Portal - vacation approvals and absence tracking"
-    categories: [approval, absence]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/rh_portal
-
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-1.0.0.tar.gz"
+            sha256: "089f309008f45799eec7fccbe6976140dae0eab0cab569a20421a54a9dd6ff3d"
   rh_management_portal:
-    name: rh_management_portal
-    version: 1.0.0
-    description: "RH Management Portal - team absences, events, and tasks"
-    categories: [absence, event, task]
-    runtime: python
-    repository: "https://github.com/banco-inter-sa/aide-plugins"
-    path: plugins/rh_management_portal
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_management_portal-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_management_portal-1.0.0.tar.gz"
+            sha256: "bddf9710ce99db04bd5623567086cfa0b72d8831087ab1e2ea02fe18aeed7207"
+  rh_portal:
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_portal-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/rh_portal-1.0.0.tar.gz"
+            sha256: "bfbb26f5874ee039151c15b227025692015a2a244318a5151165fc9c5e844a45"
+  sailpoint:
+    latest: 1.0.0
+    versions:
+      - version: 1.0.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-1.0.0.plugin.yaml"
+        artifacts:
+          python:
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-1.0.0.tar.gz"
+            sha256: "6f5baceaecf0fea13afb011cd652b08e0ee3a2fac0d49fc9b4c6cffa6d7c62eb"
