@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-06-10
+## [0.1.0] - 2026-06-11
 
 ### Added
 
@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Plugins depend on the published `aide-plugin-sdk` package from PyPI
+  (`aide-plugin-sdk>=0.1.0` in each `requirements.txt`) instead of a local SDK
+  path, so a clean install resolves the SDK without setting `AIDE_SDK_PATH`.
 - Plugins honor the CLI-resolved TLS policy (`verify_ssl` + `ca_bundle`) from the
   request context. Trusting a CA is automatic via the SDK — an explicit
   `ca_bundle`, otherwise the OS trust store (`truststore`), so corporate MITM
