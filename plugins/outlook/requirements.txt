@@ -1,2 +1,2 @@
 playwright>=1.40
-aide-sdk>=0.1.0
+aide-plugin-sdk>=0.1.0

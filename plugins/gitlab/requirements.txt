@@ -1,2 +1,2 @@
 python-gitlab>=4.0
-aide-sdk>=0.1.0
+aide-plugin-sdk>=0.1.0
