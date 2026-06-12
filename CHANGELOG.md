@@ -7,29 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-06-11
+## [0.1.0] - 2026-06-12
 
 ### Added
 
-- Public plugin registry with `gitlab`, `jira`, and `outlook` plugins.
-- Tag-driven release pipeline: a `vX.Y.Z` tag stamps every plugin artifact, a
-  guard step aborts when a `plugin.yaml` version does not match the tag, and
-  artifact URLs are pinned to the tagged release.
-- Cross-compilation of `runtime: go` plugins for `darwin/amd64`,
-  `darwin/arm64`, `linux/amd64`, `linux/arm64`, and `windows/amd64`.
-- Lint CI running `ruff check` and `ruff format --check` on every push and pull
-  request.
+- Three ready-to-use sources, each installable with `aide plugin install <name>`:
+  - **GitLab** — your merge requests, work items, and reviews.
+  - **Jira** — assigned issues, pending approvals, and ticket metrics.
+  - **Outlook** — upcoming calendar events and unread inbox count.
+- A public plugin registry, so every plugin installs with a single command.
+- Automatic support for corporate TLS / MITM proxies: plugins honor aide's
+  `verify_ssl` / `ca_bundle` and otherwise fall back to the OS trust store, so
+  roots already installed by IT just work.
 
 ### Changed
 
-- Plugins depend on the published `aide-plugin-sdk` package from PyPI
-  (`aide-plugin-sdk>=0.1.0` in each `requirements.txt`) instead of a local SDK
-  path, so a clean install resolves the SDK without setting `AIDE_SDK_PATH`.
-- Plugins honor the CLI-resolved TLS policy (`verify_ssl` + `ca_bundle`) from the
-  request context. Trusting a CA is automatic via the SDK — an explicit
-  `ca_bundle`, otherwise the OS trust store (`truststore`), so corporate MITM
-  roots already installed by IT just work. The `gitlab` plugin now passes
-  `ssl_verify=self.tls_verify` and no longer hardcodes `ssl_verify=False`.
+- Plugins install their SDK from PyPI (`aide-plugin-sdk`), so a clean install
+  resolves it without setting `AIDE_SDK_PATH`.
 
 [Unreleased]: https://github.com/matheus-meneses/aide-plugins/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/matheus-meneses/aide-plugins/releases/tag/v0.1.0

@@ -1,0 +1,46 @@
+name: Feature request
+description: Suggest a new plugin or an improvement to an existing one
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Requests for the core CLI or agent belong in the
+        [aide](https://github.com/matheus-meneses/aide/issues/new/choose) repository.
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type of request
+      options:
+        - Improve an existing plugin
+        - New plugin / data source
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: plugin
+    attributes:
+      label: Which plugin or proposed source?
+      placeholder: e.g. jira, or "Confluence"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Proposed behavior
+      description: What should the plugin surface or do?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+    validations:
+      required: false

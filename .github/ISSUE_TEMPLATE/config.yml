@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Core CLI / agent issue?
+    url: https://github.com/matheus-meneses/aide/issues/new/choose
+    about: Bugs or requests for the aide CLI or agent itself belong in the aide repository.

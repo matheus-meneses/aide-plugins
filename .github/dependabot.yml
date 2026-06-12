@@ -1,0 +1,24 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: "/plugins/gitlab"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: "/plugins/jira"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: pip
+    directory: "/plugins/outlook"
+    schedule:
+      interval: weekly
