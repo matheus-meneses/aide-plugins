@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **SailPoint** — a new builtin source for SailPoint IdentityNow access-request
+  approvals and certifications (browser-based, SSO via Microsoft login).
+- Every builtin plugin now ships an `icon` (embedded `data:` SVG) so the
+  Marketplace shows a per-plugin logo instead of a generic placeholder.
+  GitLab and Jira use their official brand marks; Outlook and SailPoint use
+  brand-colored marks (official assets are not freely redistributable).
+
 ## [0.1.0] - 2026-06-12
 
 ### Added
