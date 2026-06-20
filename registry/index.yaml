@@ -1,45 +1,45 @@
 plugins:
   gitlab:
-    latest: 0.1.0
+    latest: 0.2.0
     description: "GitLab merge requests, work items, and reviews"
     icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iI0ZDNkQyNiIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkgc2NhbGUoMC42NjY3KSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTIzLjYwMDQgOS41OTI3LS4wMzM3LS4wODYyTDIwLjMuOTgxNGEuODUxLjg1MSAwIDAgMC0uMzM2Mi0uNDA1Ljg3NDguODc0OCAwIDAgMC0uOTk5Ny4wNTM5Ljg3NDguODc0OCAwIDAgMC0uMjkuNDM5OWwtMi4yMDU1IDYuNzQ4SDcuNTM3NWwtMi4yMDU3LTYuNzQ4YS44NTczLjg1NzMgMCAwIDAtLjI5LS40NDEyLjg3NDguODc0OCAwIDAgMC0uOTk5Ny0uMDUzNy44NTg1Ljg1ODUgMCAwIDAtLjMzNjIuNDA0OUwuNDMzMiA5LjUwMTVsLS4wMzI1LjA4NjJhNi4wNjU3IDYuMDY1NyAwIDAgMCAyLjAxMTkgNy4wMTA1bC4wMTEzLjAwODcuMDMuMDIxMyA0Ljk3NiAzLjcyNjQgMi40NjIgMS44NjMzIDEuNDk5NSAxLjEzMjFhMS4wMDg1IDEuMDA4NSAwIDAgMCAxLjIxOTcgMGwxLjQ5OTUtMS4xMzIxIDIuNDYxOS0xLjg2MzMgNS4wMDYtMy43NDg5LjAxMjUtLjAxYTYuMDY4MiA2LjA2ODIgMCAwIDAgMi4wMDk0LTcuMDAzeiIvPjwvZz48L3N2Zz4K"
     versions:
-      - version: 0.1.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.plugin.yaml"
+      - version: 0.2.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.2.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.1.0.tar.gz"
-            sha256: "5d3bf6f6995bffa09425bf40d64acecef3e714cecdae61c5956ecfd12e9087f6"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/gitlab-0.2.0.tar.gz"
+            sha256: "1ab782cad658b635dcc382c7b73391176804db4b9f42df7843fe11f131bac0f2"
   jira:
-    latest: 0.1.0
+    latest: 0.2.0
     description: "Jira issues, approvals, and ticket metrics"
     icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iIzI2ODRGRiIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQgNCkgc2NhbGUoMC42NjY3KSI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTExLjU3MSAxMS41MTNIMGE1LjIxOCA1LjIxOCAwIDAgMCA1LjIzMiA1LjIxNWgyLjEzdjIuMDU3QTUuMjE1IDUuMjE1IDAgMCAwIDEyLjU3NSAyNFYxMi41MThhMS4wMDUgMS4wMDUgMCAwIDAtMS4wMDUtMS4wMDV6bTUuNzIzLTUuNzU2SDUuNzM2YTUuMjE1IDUuMjE1IDAgMCAwIDUuMjE1IDUuMjE0aDIuMTI5djIuMDU4YTUuMjE4IDUuMjE4IDAgMCAwIDUuMjE1IDUuMjE0VjYuNzU4YTEuMDAxIDEuMDAxIDAgMCAwLTEuMDAxLTEuMDAxek0yMy4wMTMgMEgxMS40NTVhNS4yMTUgNS4yMTUgMCAwIDAgNS4yMTUgNS4yMTVoMi4xMjl2Mi4wNTdBNS4yMTUgNS4yMTUgMCAwIDAgMjQgMTIuNDgzVjEuMDA1QTEuMDAxIDEuMDAxIDAgMCAwIDIzLjAxMyAwWiIvPjwvZz48L3N2Zz4K"
     versions:
-      - version: 0.1.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.plugin.yaml"
+      - version: 0.2.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.2.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.1.0.tar.gz"
-            sha256: "5d24719e1d9b5991731b012fd13ee12ae851839f8000c884022b1b62ef1ba0ce"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/jira-0.2.0.tar.gz"
+            sha256: "08ad821e264824e26a8d8c2981aad929a6ce3ce7ce0768a59e14f3ca71beeaca"
   outlook:
-    latest: 0.1.0
+    latest: 0.2.0
     description: "Microsoft Outlook calendar events and inbox unread count"
     icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iIzAwNzhENCIvPjxyZWN0IHg9IjUuNSIgeT0iOCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjguNSIgcng9IjEuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxwYXRoIGQ9Im02IDkgNiA0LjJMMTggOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPgo="
     versions:
-      - version: 0.1.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.plugin.yaml"
+      - version: 0.2.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.2.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.1.0.tar.gz"
-            sha256: "0c07d35e5e05f1303eb359b86d05282965bd876e99c48e18dcbe47c6ba4098b5"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/outlook-0.2.0.tar.gz"
+            sha256: "1a37c424c0f35ad1b9ed2d2fa55cce65f9410be2dcc9e2545e10446948571411"
   sailpoint:
-    latest: 0.1.0
+    latest: 0.2.0
     description: "SailPoint IdentityNow access-request approvals and certifications"
     icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iIzFCM0E1QiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xMi42IDV2MTFINi4yeiIvPjxwYXRoIGZpbGw9IiMzREI2RTMiIGQ9Ik0xMy44IDEwLjJWMTZoNC41eiIvPjxyZWN0IHg9IjQuNSIgeT0iMTciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxLjYiIHJ4PSIuOCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPgo="
     versions:
-      - version: 0.1.0
-        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-0.1.0.plugin.yaml"
+      - version: 0.2.0
+        manifest_url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-0.2.0.plugin.yaml"
         artifacts:
           python:
-            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-0.1.0.tar.gz"
-            sha256: "bd11d4c4118a0ea55ad3dc6b0373e1974a5f7837879b1ffa08d84ba1ac6315e2"
+            url: "https://github.com/matheus-meneses/aide-plugins/releases/latest/download/sailpoint-0.2.0.tar.gz"
+            sha256: "c3bdeed52e7a0c7a8007937cafc9b38f86f2efafaf606fbd363e982e52907bf5"

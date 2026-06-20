@@ -1,5 +1,5 @@
 name: sailpoint
-version: 0.1.0
+version: 0.2.0
 runtime: python
 description: "SailPoint IdentityNow access-request approvals and certifications"
 icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iIzFCM0E1QiIvPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0xMi42IDV2MTFINi4yeiIvPjxwYXRoIGZpbGw9IiMzREI2RTMiIGQ9Ik0xMy44IDEwLjJWMTZoNC41eiIvPjxyZWN0IHg9IjQuNSIgeT0iMTciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxLjYiIHJ4PSIuOCIgZmlsbD0iI2ZmZiIvPjwvc3ZnPgo="
