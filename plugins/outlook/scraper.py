@@ -204,7 +204,7 @@ class OutlookScraper(BaseScraper):
 
         self._log(f"    Calendar: {len(captured_events)} events captured")
         entries = []
-        now = datetime.now(UTC)
+        now = datetime.now().astimezone()
         today = now.date()
         cutoff_date = today + timedelta(days=days_ahead)
         for event in captured_events:
@@ -382,7 +382,7 @@ class OutlookScraper(BaseScraper):
                 parsed = datetime.fromisoformat(dt_obj.rstrip("Z"))
                 if parsed.tzinfo is None:
                     parsed = parsed.replace(tzinfo=UTC)
-                return parsed
+                return parsed.astimezone()
             if isinstance(dt_obj, dict):
                 raw = dt_obj.get("dateTime") or dt_obj.get("DateTime") or ""
                 if not raw:
@@ -390,7 +390,7 @@ class OutlookScraper(BaseScraper):
                 parsed = datetime.fromisoformat(raw.rstrip("Z"))
                 if parsed.tzinfo is None:
                     parsed = parsed.replace(tzinfo=UTC)
-                return parsed
+                return parsed.astimezone()
             return None
         except (ValueError, TypeError):
             return None

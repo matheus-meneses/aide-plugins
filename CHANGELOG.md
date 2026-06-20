@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-20
+
+### Added
+
+- **SailPoint** — a new builtin source for SailPoint IdentityNow access-request
+  approvals and certifications (browser-based, SSO via Microsoft login).
+- Every builtin plugin now ships an `icon` (embedded `data:` SVG) so the
+  Marketplace shows a per-plugin logo instead of a generic placeholder.
+  GitLab and Jira use their official brand marks; Outlook and SailPoint use
+  brand-colored marks (official assets are not freely redistributable).
+
+### Fixed
+
+- **Outlook** — calendar events are now bucketed and displayed in your local
+  time zone instead of UTC, so meeting times match what you see in Outlook.
+
 ## [0.1.0] - 2026-06-12
 
 ### Added
@@ -25,5 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plugins install their SDK from PyPI (`aide-plugin-sdk`), so a clean install
   resolves it without setting `AIDE_SDK_PATH`.
 
-[Unreleased]: https://github.com/matheus-meneses/aide-plugins/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/matheus-meneses/aide-plugins/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/matheus-meneses/aide-plugins/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/matheus-meneses/aide-plugins/releases/tag/v0.1.0
