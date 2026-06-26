@@ -9,15 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Outlook** — calendar event entries now include the online meeting join URL
-  (Teams, Zoom, etc.) when available. The URL is rendered below the meeting line
-  as `↗ <url>` in the calendar view.
-
-## [0.3.0] - 2026-06-26
-
-### Added
-
-- **Outlook** — parametrize plugin with three new config keys:
+- **Outlook** — three new config keys and richer event data:
   - `fetch_events` (integer, default `1`) — set to `0` to disable calendar event scraping entirely.
   - `email_count` (integer, default `0`) — when > 0, surfaces up to N unread inbox messages as
     individual `email` category items alongside the existing unread-count metric.
@@ -25,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     email item: `metadata` (subject, sender, received time), `preview` (+body preview ≤ 300 chars),
     or `full` (+full body text, HTML stripped, hard-capped at 2 000 characters to protect the LLM
     token budget).
+  - Calendar events now include the online meeting join URL (Teams, Zoom, etc.) when available,
+    rendered as `↗ <url>` below the meeting line.
 
 ## [0.2.0] - 2026-06-20
 
