@@ -14,6 +14,10 @@ OUTLOOK_DOMAIN = "outlook.office.com"
 CALENDAR_DOMAIN = "outlook.cloud.microsoft"
 LOGIN_INDICATORS = ["login.microsoftonline.com", "login.live.com"]
 
+MAX_EMAIL_BODY_CHARS = 2000
+PREVIEW_CHARS = 300
+VALID_EMAIL_DETAILS = ("metadata", "preview", "full")
+
 
 def _sessions_dir() -> Path:
     aide_home = os.environ.get("AIDE_HOME") or str(Path.home() / ".aide")
@@ -25,14 +29,21 @@ def _sessions_dir() -> Path:
 class OutlookScraper(BaseScraper):
     name = "outlook"
     version = "1.0.0"
-    categories: ClassVar[list[str]] = ["event", "metric"]
+    categories: ClassVar[list[str]] = ["event", "metric", "email"]
 
     def validate_config(self, config: dict) -> None:
-        pass
+        detail = config.get("email_detail", "metadata")
+        if detail not in VALID_EMAIL_DETAILS:
+            raise ValueError(f"email_detail must be one of {VALID_EMAIL_DETAILS!r}, got {detail!r}")
 
     def scrape(self, config: dict, secrets: dict) -> list[PluginEntry]:
+        fetch_events = int(config.get("fetch_events", 1)) != 0
         days_ahead = int(config.get("calendar_days_ahead", 7))
         self._allowed_calendars = [c.lower() for c in config.get("calendars", [])]
+        email_count = int(config.get("email_count", 0))
+        email_detail = str(config.get("email_detail", "metadata")).strip().lower()
+        if email_detail not in VALID_EMAIL_DETAILS:
+            email_detail = "metadata"
         self._session_file = _sessions_dir() / "outlook.json"
 
         with sync_playwright() as p:
@@ -40,8 +51,12 @@ class OutlookScraper(BaseScraper):
 
             self._log("Authenticated. Extracting data...")
             entries: list[PluginEntry] = []
-            entries.extend(self._scrape_calendar(page, context, days_ahead))
-            entries.extend(self._scrape_mail_count(page, context))
+            if fetch_events:
+                entries.extend(self._scrape_calendar(page, context, days_ahead))
+            if email_count > 0:
+                entries.extend(self._scrape_mail_items(page, context, email_count, email_detail))
+            else:
+                entries.extend(self._scrape_mail_count(page, context))
 
             self._log(f"Done. {len(entries)} entries collected.")
             context.close()
@@ -376,6 +391,138 @@ class OutlookScraper(BaseScraper):
 
         return None
 
+    def _scrape_mail_items(
+        self, current_page: Page, context: BrowserContext, email_count: int, email_detail: str
+    ) -> list[PluginEntry]:
+        self._log(f"  Fetching mail items (max: {email_count}, detail: {email_detail})...")
+        page = context.new_page()
+
+        captured_count = [0]
+        found_count = [False]
+        captured_messages: list[dict] = []
+
+        def on_response(response):
+            url = response.url
+            if response.status != 200:
+                return
+
+            if not found_count[0]:
+                is_folder = "FindFolder" in url or "GetFolder" in url or "mailFolders" in url or "MailFolders" in url
+                if is_folder:
+                    try:
+                        data = json.loads(response.body())
+                        count = self._extract_unread_from_response(data)
+                        if count is not None:
+                            captured_count[0] = count
+                            found_count[0] = True
+                    except Exception:
+                        pass
+
+            if len(captured_messages) < email_count:
+                is_items = "FindItem" in url or ("messages" in url and ("mailFolders" in url or "inbox" in url.lower()))
+                if is_items:
+                    try:
+                        data = json.loads(response.body())
+                        for msg in self._extract_messages_from_response(data):
+                            if len(captured_messages) < email_count:
+                                captured_messages.append(msg)
+                    except Exception:
+                        pass
+
+        page.on("response", on_response)
+        page.goto(f"https://{OUTLOOK_DOMAIN}/mail", wait_until="domcontentloaded", timeout=60000)
+        page.wait_for_timeout(12000)
+        page.close()
+
+        unread = captured_count[0]
+        self._log(f"    Inbox unread: {unread}, items captured: {len(captured_messages)}")
+        entries: list[PluginEntry] = [
+            PluginEntry(
+                source="outlook",
+                member="",
+                category="metric",
+                title="Inbox Unread",
+                detail=str(unread),
+                entry_date=date.today(),
+                priority="info",
+                metadata={"mode": "metric", "metric_value": unread},
+            )
+        ]
+        for msg in captured_messages:
+            entries.append(self._make_email_entry(msg, email_detail))
+        return entries
+
+    def _extract_messages_from_response(self, data: dict) -> list[dict]:
+        body = data.get("Body", {})
+        if isinstance(body, dict):
+            for item in body.get("ResponseMessages", {}).get("Items", []):
+                folder = item.get("RootFolder", {})
+                if isinstance(folder, dict):
+                    msgs = folder.get("Items", [])
+                    if msgs and isinstance(msgs, list) and isinstance(msgs[0], dict):
+                        return msgs
+
+        if "value" in data:
+            items = data["value"]
+            if items and isinstance(items, list) and isinstance(items[0], dict):
+                first = items[0]
+                if "subject" in first or "Subject" in first:
+                    return items
+
+        return []
+
+    def _make_email_entry(self, msg: dict, email_detail: str) -> PluginEntry:
+        subject = msg.get("Subject") or msg.get("subject") or "(No subject)"
+
+        from_obj = msg.get("From") or msg.get("from") or {}
+        mailbox = from_obj.get("Mailbox") or from_obj.get("emailAddress") or {}
+        sender_name = (
+            mailbox.get("Name") or mailbox.get("name") or mailbox.get("Address") or mailbox.get("address") or ""
+        )
+
+        received_raw = msg.get("DateTimeReceived") or msg.get("receivedDateTime") or ""
+        received_str = ""
+        if received_raw:
+            try:
+                dt = datetime.fromisoformat(str(received_raw).rstrip("Z"))
+                received_str = dt.strftime("%Y-%m-%d %H:%M")
+            except (ValueError, TypeError):
+                received_str = str(received_raw)[:16]
+
+        parts: list[str] = []
+        if sender_name:
+            parts.append(f"from: {sender_name}")
+        if received_str:
+            parts.append(f"received: {received_str}")
+
+        if email_detail in ("preview", "full"):
+            preview = msg.get("Preview") or msg.get("bodyPreview") or ""
+            if preview:
+                parts.append(f"preview: {preview[:PREVIEW_CHARS].strip()}")
+
+        if email_detail == "full":
+            body_obj = msg.get("Body") or msg.get("body") or {}
+            body_text = ""
+            if isinstance(body_obj, dict):
+                body_text = body_obj.get("Value") or body_obj.get("content") or ""
+            elif isinstance(body_obj, str):
+                body_text = body_obj
+            if body_text:
+                body_text = re.sub(r"<[^>]+>", " ", str(body_text))
+                body_text = re.sub(r"\s+", " ", body_text).strip()
+                parts.append(f"body: {body_text[:MAX_EMAIL_BODY_CHARS]}")
+
+        return PluginEntry(
+            source="outlook",
+            member=sender_name,
+            category="email",
+            title=f"Email: {subject}",
+            detail=" | ".join(parts),
+            entry_date=date.today(),
+            priority="info",
+            metadata={"mode": "items"},
+        )
+
     def _parse_graph_datetime(self, dt_obj) -> datetime | None:
         try:
             if isinstance(dt_obj, str):
@@ -400,6 +547,8 @@ class OutlookScraper(BaseScraper):
             return _render_calendar(items)
         if heading == "metric":
             return _render_metrics(items)
+        if heading == "email":
+            return _render_emails(items)
         return _render_default(items)
 
 
@@ -537,6 +686,20 @@ def _render_metrics(items: list[dict]) -> list[str]:
         title = item.get("title", "")
         detail = item.get("detail", "")
         lines.append(f" │    {title}: {detail}")
+    return lines
+
+
+def _render_emails(items: list[dict]) -> list[str]:
+    lines: list[str] = [" │"]
+    for item in items:
+        title = re.sub(r"^Email:\s*", "", item.get("title", ""))
+        if len(title) > 50:
+            title = title[:47] + "..."
+        member = item.get("member", "")
+        if len(member) > 22:
+            member = member[:19] + "..."
+        suffix = f"  ({member})" if member else ""
+        lines.append(f" │    {title}{suffix}")
     return lines
 
 
