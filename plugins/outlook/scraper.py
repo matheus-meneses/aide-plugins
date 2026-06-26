@@ -257,6 +257,10 @@ class OutlookScraper(BaseScraper):
                 duration = f"{mins // 60}h{mins % 60:02d}m" if mins >= 60 else f"{mins}m"
 
             entry_date = start_dt.date() if start_dt else date.today()
+            join_url = _extract_join_url(event)
+            metadata: dict = {"mode": "items"}
+            if join_url:
+                metadata["join_url"] = join_url
 
             entries.append(
                 PluginEntry(
@@ -267,7 +271,7 @@ class OutlookScraper(BaseScraper):
                     detail=f"{start_str_display} ({duration})" if duration else start_str_display,
                     entry_date=entry_date,
                     priority="info",
-                    metadata={"mode": "items"},
+                    metadata=metadata,
                 )
             )
         return entries
@@ -552,6 +556,21 @@ class OutlookScraper(BaseScraper):
         return _render_default(items)
 
 
+def _extract_join_url(event: dict) -> str:
+    url = (
+        event.get("OnlineMeetingUrl")
+        or event.get("onlineMeetingUrl")
+        or event.get("TeamsUrl")
+        or event.get("teamsUrl")
+        or ""
+    )
+    if not url:
+        meeting = event.get("OnlineMeeting") or event.get("onlineMeeting") or {}
+        if isinstance(meeting, dict):
+            url = meeting.get("JoinUrl") or meeting.get("joinUrl") or ""
+    return str(url) if url else ""
+
+
 def _parse_detail(detail: str) -> tuple[int, int]:
     """Returns (start_minutes, duration_minutes) or (-1, 0) if unparseable."""
     if not detail or len(detail) < 5:
@@ -646,6 +665,9 @@ def _render_calendar(items: list[dict]) -> list[str]:
             pad = " " * max(0, 40 - len(title))
             dur_col = f"  {dur_str}" if dur_str else ""
             lines.append(f" │    {time_str}  {title}{pad}  {member:<22}{dur_col}{conflict}{status}")
+            join_url = (item.get("metadata") or {}).get("join_url", "")
+            if join_url:
+                lines.append(f" │         ↗ {join_url}")
 
     return lines
 
