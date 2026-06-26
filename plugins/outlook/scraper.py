@@ -407,12 +407,7 @@ class OutlookScraper(BaseScraper):
                 return
 
             if not found_count[0]:
-                is_folder = (
-                    "FindFolder" in url
-                    or "GetFolder" in url
-                    or "mailFolders" in url
-                    or "MailFolders" in url
-                )
+                is_folder = "FindFolder" in url or "GetFolder" in url or "mailFolders" in url or "MailFolders" in url
                 if is_folder:
                     try:
                         data = json.loads(response.body())
@@ -424,10 +419,7 @@ class OutlookScraper(BaseScraper):
                         pass
 
             if len(captured_messages) < email_count:
-                is_items = "FindItem" in url or (
-                    "messages" in url
-                    and ("mailFolders" in url or "inbox" in url.lower())
-                )
+                is_items = "FindItem" in url or ("messages" in url and ("mailFolders" in url or "inbox" in url.lower()))
                 if is_items:
                     try:
                         data = json.loads(response.body())
@@ -485,11 +477,7 @@ class OutlookScraper(BaseScraper):
         from_obj = msg.get("From") or msg.get("from") or {}
         mailbox = from_obj.get("Mailbox") or from_obj.get("emailAddress") or {}
         sender_name = (
-            mailbox.get("Name")
-            or mailbox.get("name")
-            or mailbox.get("Address")
-            or mailbox.get("address")
-            or ""
+            mailbox.get("Name") or mailbox.get("name") or mailbox.get("Address") or mailbox.get("address") or ""
         )
 
         received_raw = msg.get("DateTimeReceived") or msg.get("receivedDateTime") or ""
