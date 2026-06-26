@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Outlook** — calendar event entries now include the online meeting join URL
+  (Teams, Zoom, etc.) when available. The URL is rendered below the meeting line
+  as `↗ <url>` in the calendar view.
+
 ## [0.3.0] - 2026-06-26
 
 ### Added
