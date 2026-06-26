@@ -1,16 +1,19 @@
 name: outlook
-version: 0.2.0
+version: 0.3.0
 runtime: python
-description: "Microsoft Outlook calendar events and inbox unread count"
+description: "Microsoft Outlook calendar events and unread inbox emails"
 icon: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByeD0iNSIgZmlsbD0iIzAwNzhENCIvPjxyZWN0IHg9IjUuNSIgeT0iOCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjguNSIgcng9IjEuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIvPjxwYXRoIGQ9Im02IDkgNiA0LjJMMTggOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEuNiIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPgo="
-categories: [event, metric]
+categories: [event, metric, email]
 entrypoint:
   python:
     script: __main__.py
 requirements: requirements.txt
 config:
+  - { key: fetch_events, label: "Fetch calendar events (0 to disable)", required: false, default: "1", type: integer }
   - { key: calendar_days_ahead, label: "Days ahead to fetch", required: false, default: "7", type: integer }
   - { key: calendars, label: "Allowed calendar names", required: false, type: string_list }
+  - { key: email_count, label: "Max unread emails to surface as items (0 = count only)", required: false, default: "0", type: integer }
+  - { key: email_detail, label: "Email detail level: metadata | preview | full", required: false, default: "metadata", type: string }
 credentials: []
 capabilities:
   network: ["outlook.office.com", "outlook.cloud.microsoft", "login.microsoftonline.com", "login.live.com"]
